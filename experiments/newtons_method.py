@@ -1,10 +1,9 @@
 import numpy as np
-from multivariate_kelly import *
+from multivariate_kelly import kellyCalculation
 
 
 def newtonsIteration(R, P, X):
-    gradient = kellyGradient(R, P, X)
-    hessian = kellyHessian(R, P, X)
+    _, gradient, hessian = kellyCalculation(R, P, X)
     
     # Check if the Hessian is singular
     if np.linalg.cond(hessian) > 1 / np.finfo(hessian.dtype).eps:
@@ -20,7 +19,7 @@ def newtonsIteration(R, P, X):
 
     
 
-def newtonsMethod(R, P, X=None, tolerance=1e-10, max_iterations=100):
+def newtonsMethod(R, P, X=None, tolerance=1e-6, max_iterations=100):
     """
     Find the investment fractions that maximize the expected logarithmic return using Newton's method.
 
@@ -34,29 +33,14 @@ def newtonsMethod(R, P, X=None, tolerance=1e-10, max_iterations=100):
     if X is None:
         X = np.zeros(P.ndim)
 
+    X_points = [X]
     for iteration in range(max_iterations):
-        # Update the investment fractions
-        X_new = newtonsIteration(R, P, X)
-        print(X_new, kellyCriterion(R, P, X_new))
+        X_points.append(newtonsIteration(R, P, X_points[-1]))
         
         # Check for convergence
-        if np.linalg.norm(X_new - X) < tolerance:
+        if np.linalg.norm(X_points[-1] - X_points[-2]) < tolerance:
             print(f"Converged in {iteration} iterations.")
-            return X_new
-        
-        # Update X for the next iteration
-        X = X_new
+            return X_points
     
     print("Maximum number of iterations reached without convergence.")
-    return X
-
-
-# Example usage:
-R = np.array([-0.1, 0, 0.1])  # Range of returns
-P = np.random.dirichlet(np.ones(len(R)**3))  # Example 3D joint probability distribution
-P = P.reshape((len(R), len(R), len(R)))  # Reshape to a 3D matrix for this example
-initial_X = np.zeros(P.ndim)  # Starting from X = 0
-
-# Find the optimal investment fractions
-optimal_X = newtonsMethod(R, P, initial_X)
-print("Optimal investment fractions:", optimal_X)
+    return X_points

@@ -27,26 +27,6 @@ def draw2dPlot(x, y, max_x=None, max_y=None):
     plt.show()
 
 
-def draw3dPlot(x_grid, y_grid, z_grid, points=None):
-    # Plot the surface of the objective function
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    # Plot the surface
-    surf = ax.plot_surface(x_grid, y_grid, z_grid, alpha=0.9, cmap='viridis', vmin=0)
-    # Set labels and show plot
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-    # ax.scatter(max_x, max_y, max_z, color='red', s=50)
-    # Plot the Newton's method iteration points as a line
-    if points is not None:
-        ax.plot(points[:, 0], points[:, 1], points[:, 2], marker='o', color='r', markersize=5, label='Newton Iterations')
-    ax.set_xlabel('Investment Percentage in Investment 1 (x)')
-    ax.set_ylabel('Investment Percentage in Investment 2 (y)')
-    ax.set_zlabel('Expected Logarithmic Growth Rate')
-    ax.set_title('Expected Logarithmic Growth Rate for Investment Percentages')
-    ax.legend()
-    plt.show()
-
-
 def drawProbability(R, P):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -69,4 +49,59 @@ def drawProbability(R, P):
     ax.set_zlabel('Probability')
 
     # Show the plot
+    plt.show()
+
+
+def draw3dPlot(x_grid, y_grid, values, points=None):
+    # Plot the surface of the objective function
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    X, Y = np.meshgrid(x_grid, y_grid, indexing='ij')
+    # Plot the surface
+    surf = ax.plot_surface(X, Y, values, alpha=0.9, cmap='viridis', vmin=0)
+    # Set labels and show plot
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    # Plot the Newton's method iteration points as a line
+    if points is not None:
+        ax.plot(points[:, 0], points[:, 1], points[:, 2], marker='o', color='r', markersize=5, label='Newton Iterations')
+    ax.set_xlabel('Investment Percentage in Investment 1 (x)')
+    ax.set_ylabel('Investment Percentage in Investment 2 (y)')
+    ax.set_zlabel('Expected Logarithmic Growth Rate')
+    ax.set_title('Expected Logarithmic Growth Rate for Investment Percentages')
+    ax.legend()
+    plt.show()
+
+
+def draw3variablesPlot(x_range, y_range, z_range, values, points=None):
+    # Flatten the ranges and values for plotting
+    X, Y, Z = np.meshgrid(x_range, y_range, z_range, indexing='ij')
+    X_flat = X.flatten()
+    Y_flat = Y.flatten()
+    Z_flat = Z.flatten()
+    values_flat = values.flatten()
+
+    valid_mask = (X_flat + Y_flat + Z_flat) < 1
+    X_valid = X_flat[valid_mask]
+    Y_valid = Y_flat[valid_mask]
+    Z_valid = Z_flat[valid_mask]
+    values_valid = values_flat[valid_mask]
+
+    # Create a 3D scatter plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Scatter plot with color coding
+    scatter = ax.scatter(X_valid, Y_valid, Z_valid, c=values_valid, cmap='viridis', s=1)
+    if points is not None:
+        ax.plot(points[:, 0], points[:, 1], points[:, 2], marker='o', color='r', markersize=5, label='Newton Iterations')
+
+    # Add a color bar to interpret the color coding
+    cbar = fig.colorbar(scatter, shrink=0.5, aspect=5)
+    cbar.set_label('Expected Logarithmic Growth Rate')
+
+    # Set labels
+    ax.set_xlabel('Investment Fraction 1')
+    ax.set_ylabel('Investment Fraction 2')
+    ax.set_zlabel('Investment Fraction 3')
+
     plt.show()
