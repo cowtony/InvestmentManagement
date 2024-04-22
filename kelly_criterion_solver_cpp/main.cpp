@@ -1,11 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include "KellyFormula.h"
-using namespace std;
+#include "kelly_solver.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     KellyFormula k(2);
 
     k.stocks[0].getMiuSigma(1.08, 0.1);

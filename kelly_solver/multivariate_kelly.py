@@ -12,9 +12,9 @@ def kellyCalculation(R: np.ndarray, P: np.ndarray, X: np.ndarray) -> Tuple[float
     """
     The function returns a single value represent the ROI for a given probability distribution and investment fraction.
 
-    :param R: 1D array represent the range of return, example: [-10%, -5%, 0%, 5%, 10%]
-    :param P: A N-dimension matrix represent the probability distribution for each investment's return combinition. Each dimention has the same length of R.
-    :param X: 1D array with size N, represent the portion of each investment invested.
+    :param R: 1D array represent the range of return, example: [-10%, -5%, 0%, 5%, 10%], in shape (s,)
+    :param P: A N-dimension matrix represent the probability distribution for each investment's return combinition. Each dimention has the same length of R, in shape (s^n)
+    :param X: 1D array represent the portion of each investment invested, in shape (n,)
 
     :return: the log of ROI, positive means gain and negative means loss.
              the gradient
@@ -24,7 +24,7 @@ def kellyCalculation(R: np.ndarray, P: np.ndarray, X: np.ndarray) -> Tuple[float
     assert P.ndim == X.size, "The number of dimensions in P must match the size of X"
     assert np.sum(X) <= 1, "The sum of investment fractions must be less than or equal to 1"
 
-    denominator = np.ones(P.shape)
+    denominator = np.ones(P.shape) + np.finfo(float).eps  # Add a small constant to avoid division by zero
     for i, x in enumerate(X):
         denominator += expandDims(R, X.size, i) * x
 
@@ -47,7 +47,7 @@ def kellyValue(R: np.ndarray, P: np.ndarray, X: np.ndarray) -> float:
     assert P.ndim == X.size, "The number of dimensions in P must match the size of X"
     assert np.sum(X) <= 1, "The sum of investment fractions must be less than or equal to 1"
 
-    denominator = np.ones(P.shape)
+    denominator = np.ones(P.shape) + np.finfo(float).eps  # Add a small constant to avoid division by zero
     for i, x in enumerate(X):
         denominator += expandDims(R, X.size, i) * x
 

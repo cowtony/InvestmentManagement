@@ -123,8 +123,6 @@ class TestKellyReturns(unittest.TestCase):
             self.assertSequenceAlmostEqual(gradient, old_gradient, places=7, msg=f'{gradient}, {old_gradient}')
             self.assertSequenceAlmostEqual(hessian.flatten(), old_hessian.flatten(), places=7, msg="Hessian does not match")
 
-                    
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -27,31 +27,6 @@ def draw2dPlot(x, y, max_x=None, max_y=None):
     plt.show()
 
 
-def drawProbability(R, P):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    # Create a grid for the x and y coordinates
-    x_pos, y_pos = np.meshgrid(R, R)
-    x_pos = x_pos.flatten()
-    y_pos = y_pos.flatten()
-    z_pos = np.zeros_like(x_pos)
-
-    # Set the height of the bars as the probabilities
-    dx = dy = 0.5  # Width of the bars
-    dz = P.flatten()
-
-    # Create the bar plot
-    ax.bar3d(x_pos, y_pos, z_pos, dx, dy, dz, shade=True)
-
-    # Set labels
-    ax.set_xlabel('Return on Investment 1')
-    ax.set_ylabel('Return on Investment 2')
-    ax.set_zlabel('Probability')
-
-    # Show the plot
-    plt.show()
-
-
 def draw3dPlot(x_grid, y_grid, values, points=None):
     # Plot the surface of the objective function
     fig = plt.figure()
@@ -104,4 +79,55 @@ def draw3variablesPlot(x_range, y_range, z_range, values, points=None):
     ax.set_ylabel('Investment Fraction 2')
     ax.set_zlabel('Investment Fraction 3')
 
+    plt.show()
+
+
+def drawProbability1D(R, P):
+    fig, ax = plt.subplots()
+    bar_width = np.min(np.diff(R)) * 0.8 if len(R) > 1 else 0.1
+    ax.bar(R, P, width=bar_width, align='center', alpha=0.7)
+    
+    # Set x-axis ticks to match the R values
+    ax.set_xticks(R)
+    ax.set_xlabel('Returns')
+    ax.set_ylabel('Probability')
+    ax.set_title('Probability Distribution of Returns')
+    
+    plt.show()
+
+
+def drawProbability2D(R, P):
+    fig, ax = plt.subplots()
+    heatmap = ax.imshow(P, cmap='viridis', origin='lower', aspect='auto')
+
+    # Calculate the number of bins based on the shape of P
+    num_bins = P.shape[0]
+    
+    # Calculate the tick locations based on the number of bins
+    tick_locs = np.arange(num_bins)
+    
+    # Set the tick locations
+    ax.set_xticks(tick_locs)
+    ax.set_yticks(tick_locs)
+    
+    # If R represents the bin edges, calculate the bin centers for the labels
+    if len(R) == num_bins + 1:
+        bin_centers = (R[:-1] + R[1:]) / 2
+        # Round the bin_centers to a certain number of decimal places
+        bin_centers = np.round(bin_centers, 2)
+        ax.set_xticklabels(bin_centers, rotation=45, ha='right')
+        ax.set_yticklabels(bin_centers)
+    else:
+        # Round R to a certain number of decimal places
+        R_rounded = np.round(R, 2)
+        ax.set_xticklabels(R_rounded, rotation=45, ha='right')
+        ax.set_yticklabels(R_rounded)
+
+    cbar = fig.colorbar(heatmap)
+    cbar.set_label('Probability')
+    
+    ax.set_xlabel('Return on Investment 1')
+    ax.set_ylabel('Return on Investment 2')
+    ax.set_title('Joint Probability Distribution of Returns')
+    
     plt.show()
